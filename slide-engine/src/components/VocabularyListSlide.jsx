@@ -176,36 +176,41 @@ export default function VocabularyListSlide({ data }) {
             >
               {/* Box chứa ảnh */}
               <div
-                className="w-full aspect-square bg-white rounded-xl p-2 md:p-3 relative transition-transform duration-300 group-hover:-translate-y-2 cursor-pointer"
+                className="w-full pt-[100%] bg-white rounded-xl relative transition-transform duration-300 group-hover:-translate-y-2 cursor-pointer"
                 style={{
                   boxShadow: `-6px 6px 0px 0px ${shadowColors[index % shadowColors.length]}`,
                   border: '1px solid rgba(0,0,0,0.05)'
                 }}
               >
-                <div className="w-full h-full bg-[#f1f5f9] rounded-lg overflow-hidden flex items-center justify-center relative">
-                  <img
-                    src={item.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(`Cute flat vector illustration for kids of ${item.word}, white background, highly detailed`)}?width=400&height=400&nologo=true`}
-                    alt={item.word}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="absolute inset-0 p-2 md:p-3">
+                  <div className="w-full h-full bg-[#f1f5f9] rounded-lg overflow-hidden flex items-center justify-center relative">
+                    <img
+                      src={item.image_url || `https://image.pollinations.ai/prompt/${encodeURIComponent(`Cute flat vector illustration for kids of ${item.word}, white background, highly detailed`)}?width=400&height=400&nologo=true`}
+                      alt={item.word}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Text Tiếng Anh */}
-              <h3
-                className={`${titleSizeClass} font-bold text-[#2f3542] mt-4 md:mt-6 text-center leading-tight`}
-                style={{ fontFamily: "'Fredoka', sans-serif" }}
-              >
-                {item.word}
-              </h3>
+              {/* Box chứa Text để cố định chiều cao */}
+              <div className="flex flex-col items-center justify-start mt-4 md:mt-5 h-[70px] md:h-[90px] w-full">
+                {/* Text Tiếng Anh */}
+                <h3
+                  className={`${titleSizeClass} font-bold text-[#2f3542] text-center leading-tight line-clamp-2`}
+                  style={{ fontFamily: "'Fredoka', sans-serif" }}
+                >
+                  {item.word}
+                </h3>
 
-              {/* Text Tiếng Việt */}
-              <p
-                className={`${meaningSizeClass} font-semibold text-[#6b7280] text-center leading-tight mt-1 px-2`}
-                style={{ fontFamily: "'Nunito', sans-serif" }}
-              >
-                {item.meaning}
-              </p>
+                {/* Text Tiếng Việt */}
+                <p
+                  className={`${meaningSizeClass} font-semibold text-[#6b7280] text-center leading-tight mt-1 px-2 line-clamp-2`}
+                  style={{ fontFamily: "'Nunito', sans-serif" }}
+                >
+                  {item.meaning}
+                </p>
+              </div>
             </motion.div>
           );
         })}
