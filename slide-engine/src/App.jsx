@@ -143,9 +143,16 @@ sentence_parts:
 - text: Tony
 `;
 
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
 function App() {
   const [slidesData, setSlidesData] = React.useState(null);
   const [markdownText, setMarkdownText] = React.useState(rawMarkdownInput);
+
+  // Sharing States
+  const [isSharing, setIsSharing] = React.useState(false);
+  const [shareUrl, setShareUrl] = React.useState('');
 
   // Slideshow States
   const [currentSlideIndex, setCurrentSlideIndex] = React.useState(0);
@@ -169,6 +176,47 @@ function App() {
     setSlidesData(slides);
     setCurrentSlideIndex(0);
     setDirection(0);
+  };
+
+  const handleShare = async () => {
+    if (!markdownText.trim()) {
+      alert("Please enter some markdown text first.");
+      return;
+    }
+    setIsSharing(true);
+    setShareUrl('');
+    
+    try {
+      const formData = new FormData();
+      const blob = new Blob([markdownText], { type: 'text/plain' });
+      formData.append('file', blob);
+      formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await response.json();
+      if (data.secure_url) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('file', data.secure_url);
+        const link = url.toString();
+        setShareUrl(link);
+        
+        navigator.clipboard.writeText(link).then(() => {
+          alert("Share link copied to clipboard!\n" + link);
+        });
+      } else {
+        alert("Upload failed. Did you set up the Cloudinary preset correctly?");
+        console.error(data);
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      alert("An error occurred while sharing.");
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   const handleLoadDefault = () => {
@@ -205,6 +253,26 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentSlideIndex, slidesData]);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const fileUrl = params.get('file');
+    if (fileUrl) {
+      fetch(fileUrl)
+        .then(res => res.text())
+        .then(text => {
+          setMarkdownText(text);
+          const slides = parseAutoSlideText(text);
+          setSlidesData(slides);
+          setCurrentSlideIndex(0);
+          setDirection(0);
+        })
+        .catch(err => {
+          console.error("Error loading shared file:", err);
+          alert("Failed to load the shared presentation.");
+        });
+    }
+  }, []);
 
   const slideVariants = {
     enter: (direction) => {
@@ -352,24 +420,38 @@ function App() {
             Load Default Template
           </button>
 
-          <button
-            onClick={handleGenerate}
-            className="group relative px-10 py-4 bg-[#bdecb6] hover:bg-[#a5e09f] text-[#2f3542] font-black text-2xl rounded-3xl transition-all hover:-translate-y-2 active:translate-y-0"
-            style={{
-              fontFamily: "'Fredoka', sans-serif",
-              boxShadow: "0 8px 0 0 #8cc786, 0 15px 20px rgba(0,0,0,0.1)"
-            }}
-          >
-            🚀 Generate Slides
-            {/* Sparkles effect */}
-            <motion.div
-              className="absolute -top-4 -right-4 text-4xl opacity-0 group-hover:opacity-100 transition-opacity"
-              animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-              transition={{ repeat: Infinity, duration: 1 }}
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <button
+              onClick={handleShare}
+              disabled={isSharing}
+              className={`group relative px-8 py-4 font-bold text-white rounded-3xl transition-all hover:-translate-y-1 active:translate-y-0 shadow-md ${isSharing ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#7b5cda] hover:bg-[#6c4ac7]'}`}
+              style={{
+                fontFamily: "'Fredoka', sans-serif",
+                boxShadow: isSharing ? "none" : "0 6px 0 0 #5f42b3, 0 10px 15px rgba(0,0,0,0.1)"
+              }}
             >
-              ✨
-            </motion.div>
-          </button>
+              {isSharing ? '⏳ Generating Link...' : '🔗 Share Link'}
+            </button>
+
+            <button
+              onClick={handleGenerate}
+              className="group relative px-10 py-4 bg-[#bdecb6] hover:bg-[#a5e09f] text-[#2f3542] font-black text-2xl rounded-3xl transition-all hover:-translate-y-2 active:translate-y-0"
+              style={{
+                fontFamily: "'Fredoka', sans-serif",
+                boxShadow: "0 8px 0 0 #8cc786, 0 15px 20px rgba(0,0,0,0.1)"
+              }}
+            >
+              🚀 Generate Slides
+              {/* Sparkles effect */}
+              <motion.div
+                className="absolute -top-4 -right-4 text-4xl opacity-0 group-hover:opacity-100 transition-opacity"
+                animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 1 }}
+              >
+                ✨
+              </motion.div>
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
