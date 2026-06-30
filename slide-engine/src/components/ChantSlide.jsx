@@ -7,21 +7,25 @@ export default function ChantSlide({ data }) {
     title = "Listen\nand chant",
     image_url,
     audio_url,
-    lyrics = [
-      "The ancient Maya people",
-      "lived in Mexico long ago.",
-      "Their cities were amazing;",
-      "there's a lot that we now know.",
-      "They didn't use electricity;",
-      "they cooked on fires, of course.",
-      "They walked to places, didn't drive,",
-      "and didn't travel by horse.",
-      "The people farmed and sailed and cooked,",
-      "painted pictures on the walls.",
-      "They loved the taste of chocolate",
-      "and played a sport with balls."
-    ]
+    lyrics,
+    chant_lines
   } = data || {};
+
+  const displayLyrics = chant_lines || lyrics || [
+    "The ancient Maya people",
+    "lived in Mexico long ago.",
+    "Their cities were amazing;",
+    "there's a lot that we now know.",
+    "They didn't use electricity;",
+    "they cooked on fires, of course.",
+    "They walked to places, didn't drive,",
+    "and didn't travel by horse.",
+    "The people farmed and sailed and cooked,",
+    "painted pictures on the walls.",
+    "They loved the taste of chocolate",
+    "and played a sport with balls."
+  ];
+
 
   return (
     <div className="relative w-full h-screen bg-[#fae596] overflow-hidden flex items-center justify-center font-sans">
@@ -151,7 +155,7 @@ export default function ChantSlide({ data }) {
           {/* Khung trắng chứa Lời bài hát */}
           <div className="w-full h-full bg-white rounded-[40px] p-8 shadow-md relative z-10 flex flex-col justify-center min-h-[400px]">
             <div className="flex flex-col gap-1 text-center">
-              {lyrics.map((line, index) => (
+              {displayLyrics.map((line, index) => (
                 <p
                   key={index}
                   className="text-[1.2rem] lg:text-[1.6rem] font-bold text-[#557b2f] leading-snug"

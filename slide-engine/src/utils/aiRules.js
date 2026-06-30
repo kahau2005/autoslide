@@ -229,6 +229,16 @@ elements_right:
 \`\`\`
 
 ---
+## 4. HƯỚNG DẪN TRÍCH XUẤT TỰ ĐỘNG AUDIO URL
+Khi đọc nội dung trên file PDF/Ảnh, hãy chú ý tìm **số thứ tự của file audio** (thường nằm cạnh biểu tượng cái loa, tai nghe, hoặc đĩa CD ở tiêu đề mỗi bài tập như Listen and chant, Listen and read, v.v...).
+Khi tìm thấy số audio này (ví dụ: 161, 162, 163...), hãy tự động thay thế số đó vào vị trí {NUMBER} trong cấu trúc đường link dưới đây để tạo ra link audio hoàn chỉnh:
+\`https://www.eltngl.com/sites/sites/default/files/look_sb3_ame_{NUMBER}.mp3\`
+
+Ví dụ: Nếu trên sách ghi số audio là \`162\`, bạn phải tự động xuất ra thuộc tính:
+\`audio_url: https://www.eltngl.com/sites/sites/default/files/look_sb3_ame_162.mp3\`
+Tuyệt đối không để trống hoặc bịa ra link khác.
+
+---
 **Ghi chú cho AI:** 
 Hãy trả về DUY NHẤT mã AutoSlide Markdown (.autols) và không giải thích gì thêm. Dựa vào nội dung tài liệu PDF được cung cấp, hãy trích xuất các phần từ vựng, đọc hiểu, bài tập và tự động chuyển đổi chúng sang định dạng tương ứng phía trên.
 `;
